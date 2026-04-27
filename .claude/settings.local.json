@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:mongoosejs.com)"
+      "WebFetch(domain:mongoosejs.com)",
+      "Bash(gh repo *)"
     ]
   }
 }
