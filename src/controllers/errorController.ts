@@ -64,5 +64,10 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
       error = new AppError('your token has expired. please login again', 401);
 
     sendErrorProd(error, res);
+  } else {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message
+    });
   }
 };
