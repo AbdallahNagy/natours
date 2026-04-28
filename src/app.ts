@@ -8,6 +8,7 @@ import globalErrorHandler from './controllers/errorController';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import sanitizeHtml from 'sanitize-html';
+import hpp from 'hpp';
 
 const app = express();
 
@@ -30,6 +31,33 @@ app.use('/api', limiter);
 app.set('query parser', (str: string) => qs.parse(str));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(`${__dirname}/../public`));
+
+app.use(hpp());
+
+// Strip MongoDB operator keys ($-prefixed, dot-notation) to prevent NoSQL injection
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  const sanitizeMongo = (obj: Record<string, unknown>): void => {
+    for (const key of Object.keys(obj)) {
+      if (key.startsWith('$') || key.includes('.')) {
+        delete obj[key];
+        continue;
+      }
+      const val = obj[key];
+      if (Array.isArray(val)) {
+        val.forEach(item => {
+          if (typeof item === 'object' && item !== null) sanitizeMongo(item as Record<string, unknown>);
+        });
+      } else if (typeof val === 'object' && val !== null) {
+        sanitizeMongo(val as Record<string, unknown>);
+      }
+    }
+  };
+
+  if (req.body) sanitizeMongo(req.body);
+  if (req.params) sanitizeMongo(req.params);
+  if (req.query) sanitizeMongo(req.query as Record<string, unknown>);
+  next();
+});
 
 // Sanitize request data against XSS
 app.use((req: Request, _res: Response, next: NextFunction) => {
