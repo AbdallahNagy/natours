@@ -8,7 +8,6 @@ import globalErrorHandler from './controllers/errorController';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import sanitizeHtml from 'sanitize-html';
-import mongoSanitize from 'express-mongo-sanitize';
 
 const app = express();
 
@@ -31,8 +30,6 @@ app.use('/api', limiter);
 app.set('query parser', (str: string) => qs.parse(str));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(`${__dirname}/../public`));
-
-app.use(mongoSanitize());
 
 // Sanitize request data against XSS
 app.use((req: Request, _res: Response, next: NextFunction) => {
