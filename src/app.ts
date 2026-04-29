@@ -1,14 +1,16 @@
 import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import qs from 'qs';
-import tourRouter from './routes/tourRoutes';
-import userRouter from './routes/userRoutes';
 import AppError from './utils/appError';
 import globalErrorHandler from './controllers/errorController';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import sanitizeHtml from 'sanitize-html';
 import hpp from 'hpp';
+
+import tourRouter from './routes/tourRoutes';
+import userRouter from './routes/userRoutes';
+import reviewRouter from './routes/reviewRoutes';
 
 const app = express();
 
@@ -87,6 +89,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*splat', (req: Request, res: Response, next: NextFunction) => {
   const err = new AppError(`can't find ${req.originalUrl} on this server`, 404);
