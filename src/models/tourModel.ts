@@ -1,6 +1,17 @@
 import mongoose, { Document, Query, Schema } from 'mongoose';
 import slugify from 'slugify';
 
+interface ILocation {
+  type: string;
+  coordinates: number[];
+  address: string;
+  description: string;
+}
+
+interface ITourLocation extends ILocation {
+  day: number;
+}
+
 export interface ITour extends Document {
   name: string;
   slug?: string;
@@ -18,6 +29,9 @@ export interface ITour extends Document {
   createdAt: Date;
   startDates: Date[];
   secretTour: Boolean;
+  startLocation: ILocation;
+  locations: ITourLocation[];
+  guides: mongoose.Types.ObjectId[];
 }
 
 const tourSchema = new Schema<ITour>(
@@ -65,7 +79,7 @@ const tourSchema = new Schema<ITour>(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function(this: ITour, val: number) {
+        validator: function (this: ITour, val: number) {
           return val < this.price;
         },
         message: 'discount is more than price'
@@ -94,7 +108,36 @@ const tourSchema = new Schema<ITour>(
     secretTour: {
       type: Boolean,
       default: false
-    }
+    },
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String,
+      description: String
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      }
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   {
     toJSON: { virtuals: true },
@@ -102,17 +145,21 @@ const tourSchema = new Schema<ITour>(
   }
 );
 
-tourSchema.virtual('durationWeeks').get(function() {
+tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
 // document middleware
-tourSchema.pre('save', function() {
+tourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
 });
 
 // query middleware
-tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
+tourSchema.pre(/^find/, function (this: Query<any, ITour>) {
+  this.populate({ path: 'guides', select: '-__v -passwordChangedAt' });
+});
+
+tourSchema.pre(/^find/, function (this: Query<any, ITour>) {
   this.find({ secretTour: { $ne: true } });
 });
 
@@ -120,7 +167,7 @@ tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
 //   console.log(docs);
 // });
 
-tourSchema.pre('aggregate', function() {
+tourSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 
   console.log(this.pipeline());

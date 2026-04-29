@@ -38,10 +38,10 @@ export const getTourById = catchAsync(
   async (req: Request, res: Response, next: Function): Promise<void> => {
     const tour = await Tour.findById(req.params.id);
 
-    if(!tour) {
+    if (!tour) {
       return next(new AppError('No tour found with id: ' + req.params.id, 404))
     }
-    
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -71,7 +71,7 @@ export const updateTourById = catchAsync(
       runValidators: true
     });
 
-    if(!tour) {
+    if (!tour) {
       return next(new AppError('No tour found with id: ' + req.params.id, 404))
     }
 
@@ -89,7 +89,7 @@ export const deleteTourById = catchAsync(
     const tour = await Tour.findByIdAndDelete(req.params.id);
     console.log(tour);
 
-    if(!tour) {
+    if (!tour) {
       return next(new AppError('No tour found with id: ' + req.params.id, 404))
     }
 
