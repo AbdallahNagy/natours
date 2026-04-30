@@ -42,7 +42,7 @@ const tourSchema = new Schema<ITour>(
       unique: true,
       trim: true,
       minlength: [10, 'name must be more than or equal to 10 chars'],
-      maxlength: [50, 'name must be less than or equal to 50 chars'],
+      maxlength: [50, 'name must be less than or equal to 50 chars']
       // validate: validator.isAlpha
     },
     slug: String,
@@ -79,11 +79,11 @@ const tourSchema = new Schema<ITour>(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function (this: ITour, val: number) {
+        validator: function(this: ITour, val: number) {
           return val < this.price;
         },
         message: 'discount is more than price'
-      },
+      }
     },
     summary: {
       type: String,
@@ -129,7 +129,7 @@ const tourSchema = new Schema<ITour>(
         coordinates: [Number],
         address: String,
         description: String,
-        day: Number,
+        day: Number
       }
     ],
     guides: [
@@ -145,21 +145,27 @@ const tourSchema = new Schema<ITour>(
   }
 );
 
-tourSchema.virtual('durationWeeks').get(function () {
+tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
+});
+
 // document middleware
-tourSchema.pre('save', function () {
+tourSchema.pre('save', function() {
   this.slug = slugify(this.name, { lower: true });
 });
 
 // query middleware
-tourSchema.pre(/^find/, function (this: Query<any, ITour>) {
+tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
   this.populate({ path: 'guides', select: '-__v -passwordChangedAt' });
 });
 
-tourSchema.pre(/^find/, function (this: Query<any, ITour>) {
+tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
   this.find({ secretTour: { $ne: true } });
 });
 
@@ -167,7 +173,7 @@ tourSchema.pre(/^find/, function (this: Query<any, ITour>) {
 //   console.log(docs);
 // });
 
-tourSchema.pre('aggregate', function () {
+tourSchema.pre('aggregate', function() {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 
   console.log(this.pipeline());
