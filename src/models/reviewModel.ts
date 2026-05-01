@@ -41,6 +41,7 @@ const reviewSchema = new Schema<IReview>(
 );
 
 reviewSchema.pre(/^find/, function(this: mongoose.Query<IReview[], IReview>) {
+  if (this.getOptions().skipUserPopulate) return;
   this.populate({ path: 'user', select: 'name photo' });
 });
 

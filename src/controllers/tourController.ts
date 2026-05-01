@@ -88,7 +88,7 @@ export const getMonthlyPlan = catchAsync(
 );
 
 export const getAllTours = getAllWithFilter(Tour);
-export const getTourById = getOne(Tour, 'reviews');
+export const getTourById = getOne(Tour, { path: 'reviews' });
 export const createTour = createOne(Tour);
 export const updateTourById = updateOne(Tour);
 export const deleteTourById = deleteOne(Tour);

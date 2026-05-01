@@ -28,7 +28,7 @@ export const updateOne = (Model: mongoose.Model<any>) =>
     res.status(200).json({
       status: 'success',
       data: {
-        doc
+        data: doc
       }
     });
   });
@@ -40,12 +40,12 @@ export const createOne = (Model: mongoose.Model<any>) =>
     res.status(201).json({
       status: 'success',
       data: {
-        doc
+        data: doc
       }
     });
   });
 
-export const getOne = (Model: mongoose.Model<any>, popOptions?: string) =>
+export const getOne = (Model: mongoose.Model<any>, popOptions?: mongoose.PopulateOptions | mongoose.PopulateOptions[]) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     let query = Model.findById(req.params.id);
 
@@ -58,7 +58,7 @@ export const getOne = (Model: mongoose.Model<any>, popOptions?: string) =>
     res.status(200).json({
       status: 'success',
       data: {
-        doc
+        data: doc
       }
     });
   });
@@ -71,7 +71,7 @@ export const getAll = (Model: mongoose.Model<any>) =>
       status: 'success',
       results: docs.length,
       data: {
-        docs
+        data: docs
       }
     });
   });
@@ -90,7 +90,7 @@ export const getAllWithFilter = (Model: mongoose.Model<any>) =>
       status: 'success',
       results: docs.length,
       data: {
-        docs
+        data: docs
       }
     });
   });

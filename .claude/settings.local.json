@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:mongoosejs.com)",
-      "Bash(gh repo *)"
+      "Bash(gh repo *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

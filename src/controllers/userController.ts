@@ -1,12 +1,11 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User from '../models/userModel';
 import catchAsync from '../utils/catchAsync';
 import AppError from '../utils/appError';
-import { AuthRequest } from '../shared/types/authRequest';
 import filterObj from '../utils/filterObj';
 import { createOne, deleteOne, getAll, getOne, updateOne } from './handlerFactory';
 
-export const updateMe = catchAsync(async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   if (req.body.password || req.body.passwordConfirm)
     return next(new AppError("Can't update password here. Use /updateMyPassword.", 400));
 
@@ -21,7 +20,7 @@ export const updateMe = catchAsync(async (req: AuthRequest, res: Response, next:
   });
 });
 
-export const deleteMe = catchAsync(async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const deleteMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   await User.findByIdAndUpdate(req.user._id, { active: false });
 
   res.status(200).json({
