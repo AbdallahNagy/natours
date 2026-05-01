@@ -8,7 +8,7 @@ export const createReview = catchAsync(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { review, rating, tour, user } = req.body;
 
-    if(req.user._id.toString() !== user)
+    if (req.user._id.toString() !== user)
       return next(new Error('You can only create reviews for yourself!'));
 
     const reviewRecord = await Review.create({
@@ -29,6 +29,8 @@ export const createReview = catchAsync(
 
 export const getAllReviews = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    if (req.params.tourId) req.query.tour = req.params.tourId;
+
     const features = new APIFeatures(Review.find(), req.query)
       .filter()
       .sort()
@@ -98,8 +100,7 @@ export const restrictToReviewAuthor = catchAsync(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const review = await Review.findById(req.params.id);
 
-    if (!review)
-      return next(new Error('No review found with that ID!'));
+    if (!review) return next(new Error('No review found with that ID!'));
 
     if (review.user.toString() !== req.user._id.toString())
       return next(new Error('You can only modify/delete your own reviews!'));
