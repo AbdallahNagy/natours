@@ -2,7 +2,7 @@ import express from 'express';
 import * as reviewController from '../controllers/reviewController';
 import * as authController from '../controllers/authController';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router
   .route('/')

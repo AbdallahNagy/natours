@@ -1,9 +1,11 @@
 import express from 'express';
 import * as tourController from '../controllers/tourController';
 import * as authController from '../controllers/authController';
-import * as reviewController from '../controllers/reviewController';
+import reviewRouter from './reviewRoutes';
 
 const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/top-5-cheap')
@@ -25,15 +27,6 @@ router
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTourById
-  );
-
-router
-  .route('/:tourId/reviews')
-  .get(tourController.getTourById, reviewController.getAllReviews)
-  .post(
-    authController.protect,
-    authController.restrictTo('user'),
-    reviewController.createReview
   );
 
 export default router;

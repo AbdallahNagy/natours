@@ -89,7 +89,6 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*splat', (req: Request, res: Response, next: NextFunction) => {
   const err = new AppError(`can't find ${req.originalUrl} on this server`, 404);

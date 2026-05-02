@@ -21,7 +21,11 @@ export const setTourAndUserIds = (req: Request, res: Response, next: NextFunctio
 export const createReview = createOne(Review);
 
 export const setTourIdToQuery = (req: Request, res: Response, next: NextFunction): void => {
+  console.log(req.params.tourId);
+  
   if (req.params.tourId) req.query.tour = req.params.tourId;
+
+  console.log(req.query);
   next();
 };
 
