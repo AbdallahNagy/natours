@@ -76,9 +76,10 @@ export const getAll = (Model: mongoose.Model<any>) =>
     });
   });
 
-export const getAllWithFilter = (Model: mongoose.Model<any>) =>
+export const getAllWithFilter = (Model: mongoose.Model<any>, buildFilter?: (req: Request) => Record<string, any>) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const features = new APIFeatures(Model.find(), req.query)
+    const filter = buildFilter ? buildFilter(req) : {};
+    const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields()

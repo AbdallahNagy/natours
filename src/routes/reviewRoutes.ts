@@ -6,11 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(reviewController.setTourIdToQuery, reviewController.getAllReviews)
+  .get(reviewController.getAllReviews)
   .post(
     authController.protect,
     reviewController.setTourAndUserIds,
-    reviewController.protectCreateReview,
     reviewController.createReview
   );
 
@@ -20,7 +19,7 @@ router
   .patch(
     authController.protect,
     reviewController.restrictToReviewAuthor,
-    reviewController.updateReview
+    reviewController.updateReview // TODO:we can't udpate tour not user. 
   )
   .delete(
     authController.protect,

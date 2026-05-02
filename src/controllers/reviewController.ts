@@ -1,7 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import catchAsync from '../utils/catchAsync';
 import Review from '../models/reviewModel';
-import { createOne, deleteOne, getAllWithFilter, getOne, updateOne } from './handlerFactory';
+import {
+  createOne,
+  deleteOne,
+  getAllWithFilter,
+  getOne,
+  updateOne
+} from './handlerFactory';
 
 export const protectCreateReview = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -12,24 +18,24 @@ export const protectCreateReview = catchAsync(
   }
 );
 
-export const setTourAndUserIds = (req: Request, res: Response, next: NextFunction): void => {
+export const setTourAndUserIds = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.user._id;
+  req.body.user = req.user._id;
+
+  console.log(req.body.user);
+  console.log(req.user._id);
   next();
 };
 
 export const createReview = createOne(Review);
 
-export const setTourIdToQuery = (req: Request, res: Response, next: NextFunction): void => {
-  console.log(req.params.tourId);
-  
-  if (req.params.tourId) req.query.tour = req.params.tourId;
-
-  console.log(req.query);
-  next();
-};
-
-export const getAllReviews = getAllWithFilter(Review);
+export const getAllReviews = getAllWithFilter(Review, (req: Request) =>
+  req.params.tourId ? { tour: req.params.tourId } : {}
+);
 
 export const getReview = getOne(Review);
 
@@ -39,7 +45,9 @@ export const deleteReview = deleteOne(Review);
 
 export const restrictToReviewAuthor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const review = await Review.findById(req.params.id).setOptions({ skipUserPopulate: true });
+    const review = await Review.findById(req.params.id).setOptions({
+      skipUserPopulate: true
+    });
 
     if (!review) return next(new Error('No review found with that ID!'));
 
