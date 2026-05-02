@@ -21,8 +21,9 @@ const reviewSchema = new Schema<IReview>(
     },
     rating: {
       type: Number,
-      min: 1,
-      max: 5
+      // required: [true, 'review must have a rating'],
+      min: [1, 'rating must be above 1.0'],
+      max: [5, 'rating must be below 5.0']
     },
     createdAt: {
       type: Date,
@@ -45,6 +46,8 @@ const reviewSchema = new Schema<IReview>(
   }
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function(this: mongoose.Query<IReview[], IReview>) {
   if (this.getOptions().skipUserPopulate) return;
   this.populate({ path: 'user', select: 'name photo' });
@@ -65,8 +68,6 @@ reviewSchema.statics.calcAverageRatings = async function(
       }
     }
   ]);
-
-  console.log(stats);
 
   await Tour.findByIdAndUpdate(tourId, {
     ratingsQuantity: stats.length > 0 ? stats[0].nRating : 0,

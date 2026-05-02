@@ -66,7 +66,10 @@ const tourSchema = new Schema<ITour>(
     },
     ratingsAverage: {
       type: Number,
-      default: 4.5
+      default: 4.5,
+      min: [1, 'rating must be above 1.0'],
+      max: [5, 'rating must be below 5.0'],
+      set: (val: number) => Math.round(val * 10) / 10
     },
     ratingsQuantity: {
       type: Number,
