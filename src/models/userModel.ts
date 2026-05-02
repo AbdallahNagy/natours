@@ -66,8 +66,14 @@ const userSchema = new Schema<IUser>({
     select: false
   },
   passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetToken: {
+    type: String,
+    select: false
+  },
+  passwordResetExpires: {
+    type: Date,
+    select: false
+  }
 });
 
 userSchema.pre('save', async function() {

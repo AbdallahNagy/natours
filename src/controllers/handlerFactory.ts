@@ -8,7 +8,10 @@ export const deleteOne = (Model: mongoose.Model<any>) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
-    if (!doc) return next(new AppError('No document found with id: ' + req.params.id, 404));
+    if (!doc)
+      return next(
+        new AppError('No document found with id: ' + req.params.id, 404)
+      );
 
     res.status(204).json({
       status: 'success',
@@ -23,7 +26,10 @@ export const updateOne = (Model: mongoose.Model<any>) =>
       runValidators: true
     });
 
-    if (!doc) return next(new AppError('No document found with id: ' + req.params.id, 404));
+    if (!doc)
+      return next(
+        new AppError('No document found with id: ' + req.params.id, 404)
+      );
 
     res.status(200).json({
       status: 'success',
@@ -45,7 +51,10 @@ export const createOne = (Model: mongoose.Model<any>) =>
     });
   });
 
-export const getOne = (Model: mongoose.Model<any>, popOptions?: mongoose.PopulateOptions | mongoose.PopulateOptions[]) =>
+export const getOne = (
+  Model: mongoose.Model<any>,
+  popOptions?: mongoose.PopulateOptions | mongoose.PopulateOptions[]
+) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     let query = Model.findById(req.params.id);
 
@@ -53,7 +62,10 @@ export const getOne = (Model: mongoose.Model<any>, popOptions?: mongoose.Populat
 
     const doc = await query;
 
-    if (!doc) return next(new AppError('No document found with id: ' + req.params.id, 404));
+    if (!doc)
+      return next(
+        new AppError('No document found with id: ' + req.params.id, 404)
+      );
 
     res.status(200).json({
       status: 'success',
@@ -76,7 +88,10 @@ export const getAll = (Model: mongoose.Model<any>) =>
     });
   });
 
-export const getAllWithFilter = (Model: mongoose.Model<any>, buildFilter?: (req: Request) => Record<string, any>) =>
+export const getAllWithFilter = (
+  Model: mongoose.Model<any>,
+  buildFilter?: (req: Request) => Record<string, any>
+) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const filter = buildFilter ? buildFilter(req) : {};
     const features = new APIFeatures(Model.find(filter), req.query)

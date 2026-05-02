@@ -5,6 +5,11 @@ import AppError from '../utils/appError';
 import filterObj from '../utils/filterObj';
 import { createOne, deleteOne, getAll, getOne, updateOne } from './handlerFactory';
 
+export const getMe = (req: Request, res: Response, next: NextFunction): void => {
+  req.params.id = req.user._id.toString();
+  next();
+};
+
 export const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   if (req.body.password || req.body.passwordConfirm)
     return next(new AppError("Can't update password here. Use /updateMyPassword.", 400));

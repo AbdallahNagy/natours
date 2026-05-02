@@ -166,12 +166,8 @@ tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
 });
 
 tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
-  this.find({ secretTour: { $ne: true } });
+  this.find({ secretTour: { $ne: true } }).select('-__v -_id');
 });
-
-// tourSchema.post(/^find/, function(docs) {
-//   console.log(docs);
-// });
 
 tourSchema.pre('aggregate', function() {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
