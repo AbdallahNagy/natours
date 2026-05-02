@@ -1,4 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import Tour from './tourModel';
 
 interface IReview extends Document {
   review: string;
@@ -6,6 +7,10 @@ interface IReview extends Document {
   createdAt: Date;
   tour: mongoose.Types.ObjectId;
   user: mongoose.Types.ObjectId;
+}
+
+interface IReviewModel extends Model<IReview> {
+  calcAverageRatings(tourId: mongoose.Types.ObjectId): Promise<void>;
 }
 
 const reviewSchema = new Schema<IReview>(
@@ -45,4 +50,37 @@ reviewSchema.pre(/^find/, function(this: mongoose.Query<IReview[], IReview>) {
   this.populate({ path: 'user', select: 'name photo' });
 });
 
-export default mongoose.model<IReview>('Review', reviewSchema);
+reviewSchema.statics.calcAverageRatings = async function(
+  tourId: mongoose.Types.ObjectId
+) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId }
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' }
+      }
+    }
+  ]);
+
+  console.log(stats);
+
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats.length > 0 ? stats[0].nRating : 0,
+    ratingsAverage: stats.length > 0 ? stats[0].avgRating : 4.5
+  });
+};
+
+reviewSchema.post('save', function(this: IReview) {
+  (this.constructor as IReviewModel).calcAverageRatings(this.tour);
+});
+
+reviewSchema.post(/^findOneAnd/, async function(review: IReview | null) {
+  if (review)
+    await (review.constructor as IReviewModel).calcAverageRatings(review.tour);
+});
+
+export default mongoose.model<IReview, IReviewModel>('Review', reviewSchema);
