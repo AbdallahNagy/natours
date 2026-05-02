@@ -140,7 +140,6 @@ const tourSchema = new Schema<ITour>(
     ]
   },
   {
-    toJSON: { virtuals: true },
     toObject: { virtuals: true }
   }
 );
@@ -166,7 +165,7 @@ tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
 });
 
 tourSchema.pre(/^find/, function(this: Query<any, ITour>) {
-  this.find({ secretTour: { $ne: true } }).select('-__v -_id');
+  this.find({ secretTour: { $ne: true } });
 });
 
 tourSchema.pre('aggregate', function() {

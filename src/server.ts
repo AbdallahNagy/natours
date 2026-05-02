@@ -2,6 +2,18 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './config.env' });
 
 import mongoose from 'mongoose';
+
+mongoose.plugin(schema => {
+  schema.set('toJSON', {
+    virtuals: true,
+    transform: (_doc, ret: Record<string, any>) => {
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    }
+  });
+});
+
 import app from './app';
 
 const connectionString = process.env.LOCAL_CONNECTION_STRING;

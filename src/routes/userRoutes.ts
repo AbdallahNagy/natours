@@ -9,15 +9,13 @@ router.post('/login', authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
 router.post('/resetPassword/:token', authController.resetPassword);
-router.patch(
-  '/updatePassword',
-  authController.protect,
-  authController.updatePassword
-);
 
-router.get('/me', authController.protect, userController.getMe, userController.getUserById);
-router.patch('/updateme', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.use(authController.protect);
+
+router.patch('/updatePassword', authController.updatePassword);
+router.get('/me', userController.getMe, userController.getUserById);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
 
 router
   .route('/')
